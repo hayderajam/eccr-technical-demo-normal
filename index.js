@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const DATA_FILE = path.join(__dirname, "users.txt");
+const DATA_FILE = path.join(__dirname, "public/users.txt");
 
 // Stelle sicher, dass die Datei existiert
 if (!fs.existsSync(DATA_FILE)) {
@@ -35,4 +35,15 @@ app.post("/login", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server läuft auf Port ${PORT}`);
+});
+
+// noch in index.js
+app.get("/show-users", (req, res) => {
+  const dataPath = path.join(__dirname, "/public/users.txt");
+  res.sendFile(dataPath, (err) => {
+    if (err) {
+      console.error("Fehler beim Lesen der Datei:", err);
+      res.status(500).send("Konnte Datei nicht laden");
+    }
+  });
 });
