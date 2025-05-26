@@ -8,6 +8,8 @@ const DATA_FILE = path.join(__dirname, "public", "users.txt");
 
 
 //1. Nur Facebook In-App WebView erlauben
+
+/**
 app.get("", (req, res, next) => {
   const ua = req.headers["user-agent"] || "";
   if (!/(FBAN\/|FBAV\/)/i.test(ua)) {
@@ -23,6 +25,8 @@ app.get("/login", (req, res, next) => {
   }
   next();
 });
+**/
+
 
 // 2. Sicherstellen, dass users.txt existiert
 if (!fs.existsSync(DATA_FILE)) {
